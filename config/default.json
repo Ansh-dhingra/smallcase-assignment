@@ -1,0 +1,7 @@
+{
+    "authorName" : "Ansh Dhingra",
+    "date" : "7th August 2021",
+    "projectName" : "smallcase-portfolio-backend",
+    "PORT" : "3000",
+    "mongodbConnectionURL" : "mongodb://localhost:27017/db_portfolio"
+}
