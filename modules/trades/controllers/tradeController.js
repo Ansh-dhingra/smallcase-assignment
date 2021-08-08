@@ -92,6 +92,11 @@ exports.addTrade = async (req, res) => {
 exports.updateTradeById = async (req, res) => {
     try {
         const tradeId = req.params.tradeId;
+        if(!tradeId || tradeId.length !== 24){
+            return res.status(constants.badReqHTTPCode).send({
+                message : constants.RESPONSE_MESSAGES.NO_TRADE_ID_PRESENT
+            });
+        }
         let { tickerSymbol, unitSharePrice, shareQuantity, tradeType } = req.body;
         let tradeDoc = await tradesModel.findById(tradeId)
         if (!tradeDoc) {
@@ -166,6 +171,11 @@ exports.updateTradeById = async (req, res) => {
 exports.deleteTradeById = async (req, res) => {
     try {
         const tradeId = req.params.tradeId;
+        if(!tradeId || tradeId.length !== 24){
+            return res.status(constants.badReqHTTPCode).send({
+                message : constants.RESPONSE_MESSAGES.NO_TRADE_ID_PRESENT
+            });
+        }
         // Check if the incoming Trade exists in DB
         const tradeDoc = await tradesModel.findById(tradeId);
         if (!tradeDoc) {

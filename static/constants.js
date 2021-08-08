@@ -11,6 +11,7 @@ exports.RESPONSE_MESSAGES = {
 	NO_TRADE_PRESENT: "No such trade in database",
 	NO_SECURITY_PRESENT: "No such security in database",
 	NO_DATA_FOUND : "No data found",
+	NO_TRADE_ID_PRESENT : "Missing or Incorrect trade ID",
 	SUCCESS : "Success",
 	DELETED : "Deleted successfully",
 	UPDATED : "Updated successfully",
