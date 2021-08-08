@@ -56,7 +56,7 @@ exports.addTrade = async (req, res) => {
             case constants.TRADE_TYPE.SELL: {
                 // In case of SELL - The current share quanity should be able to support the incoming SELL operation
                 if(!portfolioDoc || portfolioDoc.shareQuantity < shareQuantity){
-                    return res.status(constants.errorHTTPCode)
+                    return res.status(constants.badReqHTTPCode)
                     .send({ 
                         message: constants.RESPONSE_MESSAGES.NOT_ENOUGH_SHARES 
                     });
@@ -111,7 +111,7 @@ exports.updateTradeById = async (req, res) => {
         if(tickerSymbol !== tradeDoc.tickerSymbol){ //If Ticker symbol has been updated in existing trade
             if(!newPortfolio){
                 if(tradeType === constants.TRADE_TYPE.SELL){
-                    return res.status(constants.errorHTTPCode).send({ 
+                    return res.status(constants.badReqHTTPCode).send({ 
                         message: constants.RESPONSE_MESSAGES.NOT_ENOUGH_SHARES 
                     });
                 }
@@ -127,7 +127,7 @@ exports.updateTradeById = async (req, res) => {
                     }
                     case constants.TRADE_TYPE.SELL: {
                         if(newPortfolio.shareQuantity < shareQuantity){
-                            return res.status(constants.errorHTTPCode).send({ 
+                            return res.status(constants.badReqHTTPCode).send({ 
                                 message: constants.RESPONSE_MESSAGES.NOT_ENOUGH_SHARES 
                             });
                         }
@@ -140,7 +140,7 @@ exports.updateTradeById = async (req, res) => {
         }
         const oldPortfolioResult = await tradeService.processOldPortfolioUpdates(tradeId, tradeDoc, oldPortfolio, tickerSymbol, unitSharePrice, shareQuantity, tradeType);
         if(!oldPortfolioResult){
-            return res.status(constants.errorHTTPCode).send({ 
+            return res.status(constants.badReqHTTPCode).send({ 
                 message: constants.RESPONSE_MESSAGES.NOT_ENOUGH_SHARES 
             });
         }
