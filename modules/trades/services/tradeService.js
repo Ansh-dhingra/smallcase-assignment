@@ -87,6 +87,9 @@ exports.processOldPortfolioUpdates = ((tradeId, tradeDoc, portfolioDoc, ...paylo
                     }
                 }
             }
+            if(portfolioDoc.avgBuyPrice < 0){ 
+                return resolve(0);  //In case BUY Trade is updated and then there are not enough to perform SELL 
+            }
             return resolve(1);
         }catch(error){
             reject(error);
@@ -111,27 +114,29 @@ exports.processAvgBuyPrice = ((tradeId, tickerSymbol, currentBuyPrice = 0, curre
             });
             let avgBuyPrice = 0, totalShares = 0;
             tradeAllDoc.map((tradeData) => {
-                if(currentBuyPrice && currentShares && tradeData._id === tradeId){
+                if(tradeData._id != tradeId){
+                    switch(tradeData.tradeType){
+                        case constants.TRADE_TYPE.BUY: {
+                            avgBuyPrice = !avgBuyPrice ? tradeAllDoc.length > 1 ? tradeData.unitSharePrice : 0 : 
+                                exports.roundToTwo(((avgBuyPrice * totalShares) + tradeData.totalTradeAmount) 
+                                / (totalShares + tradeData.shareQuantity))
+                            totalShares += tradeData.shareQuantity;
+                            break;
+                        }
+                        case constants.TRADE_TYPE.SELL: {
+                            totalShares -= tradeData.shareQuantity;
+                            break;
+                        }
+                    }
+                    //In case BUY Trade is deleted/updated and then there are not enough to perform SELL 
+                    if(totalShares < 0){
+                        return resolve(-1);
+                    }
+                }else if(currentBuyPrice && currentShares){
                     avgBuyPrice = !avgBuyPrice ? currentBuyPrice : 
                         exports.roundToTwo((avgBuyPrice * totalShares) + currentBuyPrice * currentShares) 
                         / (totalShares + currentShares)
                     totalShares += currentShares
-                }else{
-                    if(tradeData._id != tradeId){
-                        switch(tradeData.tradeType){
-                            case constants.TRADE_TYPE.BUY: {
-                                avgBuyPrice = !avgBuyPrice ? tradeAllDoc.length > 1 ? tradeData.unitSharePrice : 0 : 
-                                    exports.roundToTwo(((avgBuyPrice * totalShares) + tradeData.totalTradeAmount) 
-                                    / (totalShares + tradeData.shareQuantity))
-                                totalShares += tradeData.shareQuantity;
-                                break;
-                            }
-                            case constants.TRADE_TYPE.SELL: {
-                                totalShares -= tradeData.shareQuantity;
-                                break;
-                            }
-                        }
-                    }
                 }
             })
             resolve(exports.roundToTwo(avgBuyPrice));

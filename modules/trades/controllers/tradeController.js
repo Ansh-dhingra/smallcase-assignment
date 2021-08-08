@@ -194,6 +194,12 @@ exports.deleteTradeById = async (req, res) => {
                 break;
             }
         }
+        if(portfolioDoc.avgBuyPrice < 0){ 
+            //In case BUY Trade is deleted and then there are not enough to perform SELL 
+            return res.status(constants.badReqHTTPCode).send({ 
+                message: constants.RESPONSE_MESSAGES.NOT_ENOUGH_SHARES 
+            }) 
+        }
         // Delete and Update Portfolio details
         await Promise.all([
             tradesModel.findByIdAndDelete(tradeId),
