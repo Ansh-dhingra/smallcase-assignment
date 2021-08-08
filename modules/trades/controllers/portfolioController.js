@@ -1,5 +1,6 @@
 const portfolioModel    = require("../../../models/portfolio");
 const constants         = require("../../../static/constants");
+const tradeService      = require("../services/tradeService");
 
 /**
      * @function <b>getReturns</b> Get Returns
@@ -13,7 +14,7 @@ exports.getReturns = async (req, res) => {
         portfolioResult.map((portfolio) => netReturn += (constants.CURRENT_STOCK_PRICE - portfolio.avgBuyPrice) * portfolio.shareQuantity )
         return res.status(constants.successHTTPCode).send({
             message: constants.RESPONSE_MESSAGES.SUCCESS,
-            netReturn 
+            netReturn: tradeService.roundToTwo(netReturn)
         });
     } catch (err) {
         console.log(err);
